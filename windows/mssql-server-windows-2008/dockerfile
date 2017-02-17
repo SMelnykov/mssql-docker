@@ -7,19 +7,34 @@ MAINTAINER Sergiy Melnykov
 # set environment variables
 
 # SQL Server 2016 Express SP1 Download Link
-ENV sql_2008_download_url "https://go.microsoft.com/fwlink/?linkid=829176"
+ENV sql_2008_ISO_url "\\K7MELNYKOV\Install2\SW_DVD5_SQL_Svr_Standard_Edtn_2008_English_MLF_X14-89155.ISO"
 
 ENV sa_password _
-ENV sql_instances "[]"
+ENV sql_instance _
 ENV attach_dbs "[]"
-ENV ACCEPT_EULA _
+ENV ACCEPT_EULA _cd .
+
+ENV SYSADMINACCOUNTS BUILTIN\ADMINISTRATORS
+ENV SQLACCOUNT NT AUTHORITY\SYSTEM
+ENV SQLCOLLATION Latin1_General_CI_AS
+ENV BackupDir "C:\Backups"
+ENV TempDBDir "C:\SQLDATA"
+ENV SQLDataDir "C:\SQLDATA"
+
 
 # make install files accessible
 COPY . /
 WORKDIR /
 
-# download and install Microsoft SQL 2016 Express Edition in one step
-RUN powershell -Command (New-Object System.Net.WebClient).DownloadFile('%sql_express_download_url%', 'sqlexpress.exe') && /sqlexpress.exe /qs /x:setup && /setup/setup.exe /q /ACTION=Install /INSTANCENAME=SQLEXPRESS /FEATURES=SQLEngine /UPDATEENABLED=0 /SQLSVCACCOUNT="NT AUTHORITY\System" /SQLSYSADMINACCOUNTS="BUILTIN\ADMINISTRATORS" /TCPENABLED=1 /NPENABLED=0 /IACCEPTSQLSERVERLICENSETERMS && del /F /Q sqlexpress.exe && rd /q /s setup
+# Uses dism.exe to install the NetFX3.
+#RUN dism.exe /online /enable-feature /all /featurename:NetFX3 /All /NoRestart
+
+# download and install Microsoft SQL 2008 standard Edition in one step
+# RUN powershell -Command (New-Object System.Net.WebClient).DownloadFile('%sql_2008_download_url%', 'sqlexpress.exe') && /sqlexpress.exe /qs /x:setup && /setup/setup.exe /q /ACTION=Install /INSTANCENAME=SQLEXPRESS /FEATURES=SQLEngine /UPDATEENABLED=0 /SQLSVCACCOUNT="NT AUTHORITY\System" /SQLSYSADMINACCOUNTS="BUILTIN\ADMINISTRATORS" /TCPENABLED=1 /NPENABLED=0 /IACCEPTSQLSERVERLICENSETERMS && del /F /Q sqlexpress.exe && rd /q /s setup
+RUN powershell -Command \
+					 $ISO = %sql_2008_ISO_url%; \
+                $driveLetter = (Get-DiskImage -ImagePath $ISO | Get-Volume).DriveLetter; \
+					 $driveLetter:\setup.exe /q /ACTION=Install /FEATURES=SQLEngine Replication /INSTANCENAME=%sql_instance% /SQLBACKUPDIR="%BackupDir%\%sql_instance%" /SQLTEMPDBDIR="%TempDBDir%\%sql_instance%" /SQLUSERDBDIR="%SQLDataDir%\%sql_instance%" /INSTALLSQLDATADIR="%SQLDataDir%\%sql_instance%" /AGTSVCSTARTUPTYPE=Automatic /SQLCOLLATION=%SQLCOLLATION% /SAPWD=%sa_password% /SECURITYMODE=SQL /SQLSVCACCOUNT="NT AUTHORITY\System" /SQLSYSADMINACCOUNTS="BUILTIN\ADMINISTRATORS" /AGTSVCACCOUNT="NT AUTHORITY\System" /TCPENABLED=1
 
 RUN powershell -Command \
         set-strictmode -version latest ; \
