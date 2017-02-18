@@ -2,7 +2,7 @@
 @set LogDir=C:\SQLLOG
 @set TempDBdir=C:\SQLTEMPDB
 @set BackupDir=C:\DBBackups
-@set Instpath=Z:\
+@set Instpath=%~1\
 
 @set instances=CDEV_CDB CDEV_LDB1 CDEV_LDB2 CDEV_CDBSite CDEV_LDB1Site CDEV_LDB2Site CDEV2_CDB CDEV2_LDB1 CDEV2_LDB2 CDEV3_CDB CDEV3_LDB1 CDEV3_LDB2 HAM
 
