@@ -1,2 +1,5 @@
-/ISO/*
-/Install/*
+*/ISO/*
+*/Install/*
+.dockerignore
+.git*
+Dockerfile*

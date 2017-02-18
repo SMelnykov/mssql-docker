@@ -4,9 +4,13 @@ FROM microsoft/windowsservercore
 # maintainer for image metadata
 MAINTAINER Sergiy Melnykov
 
+# Set one or more individual labels
+LABEL com.cqg.gateway.version="5.05.00000"
+LABEL vendor="CQG Inc"
+LABEL com.cqg.gatcom.cqg.gateway.version.is-production="NO"
+
 # set environment variables
 
-# SQL Server 2016 Express SP1 Download Link
 ENV sql_2008_ISO_file "SW_DVD5_SQL_Svr_Standard_Edtn_2008_English_MLF_X14-89155.ISO"
 ENV win64_ISO_file "en_windows_server_2016_x64_dvd_9327751.iso"
 ENV sa_password _
@@ -16,11 +20,11 @@ ENV ACCEPT_EULA _cd .
 EXPOSE 1434
 
 # make install files accessible
-COPY . /
+#COPY ./install.bat /
 WORKDIR /
 
 # Uses dism.exe to install the NetFX3.
-RUN   powershell -Command Get-DiskImage -ImagePath "/ISO/%win64_ISO_file%" \
+RUN   powershell -Command Get-DiskImage -ImagePath "./ISO/%win64_ISO_file%" \
       && Install-WindowsFeature NET-Framework-Features / -Source "E`\winsxs"
       #RUN dism.exe /online /enable-feature /all /featurename:NetFX3 /All /NoRestart
 RUN dism.exe /online /enable-feature /all /featurename:NetFX3 /All /NoRestart
