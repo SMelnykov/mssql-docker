@@ -1,0 +1,13 @@
+@set DataDir=C:\SQLDATA
+@set LogDir=C:\SQLLOG
+@set TempDBdir=C:\SQLTEMPDB
+@set BackupDir=C:\DBBackups
+@set Instpath=Z:\
+
+@set instances=CDEV_CDB CDEV_LDB1 CDEV_LDB2 CDEV_CDBSite CDEV_LDB1Site CDEV_LDB2Site CDEV2_CDB CDEV2_LDB1 CDEV2_LDB2 CDEV3_CDB CDEV3_LDB1 CDEV3_LDB2 HAM
+
+@pushd "%Instpath%"
+	@for %%i in (%instances%) do @(
+		@setup.exe /q /ACTION=Install /ERRORREPORTING=0 /FEATURES=SQLEngine Replication /INSTANCENAME=%%~i /SQLBACKUPDIR="%BackupDir%\%%~i" /SQLTEMPDBDIR="%TempDBdir%\%%~i" /SQLUSERDBLOGDIR="%LogDir%\%%~i" /SQLUSERDBDIR="%DataDir%\%%~i" /INSTALLSQLDATADIR="%DataDir%\%%~i" /AGTSVCSTARTUPTYPE=Automatic /SQLSVCStartuptype=Automatic /PID="FXHQY-JQF42-68VVV-PYVVR-RY3BB" /SQLCOLLATION=Latin1_General_CI_AS /SAPWD=$QLacc3$$ /SECURITYMODE=SQL /SQLSVCACCOUNT="NT AUTHORITY\SYSTEM" /SQLSYSADMINACCOUNTS="BUILTIN\Administrators" /BROWSERSVCStartupType=Automatic /AGTSVCACCOUNT="NT AUTHORITY\SYSTEM" /TCPENABLED=1
+	)
+@popd
